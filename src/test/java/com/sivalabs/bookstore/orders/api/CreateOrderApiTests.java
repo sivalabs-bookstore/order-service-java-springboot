@@ -62,7 +62,7 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
                         .then()
                         .statusCode(202)
                         .body("orderId", notNullValue())
-                        .body("orderStatus", is("NEW"))
+                        .body("status", is("NEW"))
                         .extract()
                         .body()
                         .as(OrderConfirmationDTO.class);
@@ -114,7 +114,7 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
                 .then()
                 .statusCode(202)
                 .body("orderId", notNullValue())
-                .body("orderStatus", is("ERROR"));
+                .body("status", is("ERROR"));
     }
 
     @Test
