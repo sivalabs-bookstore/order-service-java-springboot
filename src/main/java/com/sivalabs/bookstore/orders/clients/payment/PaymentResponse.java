@@ -13,6 +13,7 @@ public class PaymentResponse {
     private PaymentStatus status;
 
     public enum PaymentStatus {
-        ACCEPTED, REJECTED
+        ACCEPTED,
+        REJECTED
     }
 }

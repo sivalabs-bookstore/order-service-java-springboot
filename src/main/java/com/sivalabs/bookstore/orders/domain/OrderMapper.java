@@ -4,11 +4,10 @@ import com.sivalabs.bookstore.orders.api.CreateOrderRequest;
 import com.sivalabs.bookstore.orders.domain.entity.Order;
 import com.sivalabs.bookstore.orders.domain.entity.OrderItem;
 import com.sivalabs.bookstore.orders.domain.entity.OrderStatus;
-import org.springframework.stereotype.Component;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.stereotype.Component;
 
 @Component
 public class OrderMapper {
@@ -30,8 +29,8 @@ public class OrderMapper {
         Set<OrderItem> orderItems = new HashSet<>();
         for (CreateOrderRequest.LineItem item : orderRequest.getItems()) {
             OrderItem orderItem = new OrderItem();
-            orderItem.setIsbn(item.getIsbn());
-            orderItem.setTitle(item.getTitle());
+            orderItem.setCode(item.getCode());
+            orderItem.setName(item.getName());
             orderItem.setPrice(item.getPrice());
             orderItem.setQuantity(item.getQuantity());
             orderItem.setOrder(newOrder);

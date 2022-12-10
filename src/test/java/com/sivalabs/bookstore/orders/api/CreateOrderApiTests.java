@@ -1,34 +1,32 @@
 package com.sivalabs.bookstore.orders.api;
 
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+
 import com.sivalabs.bookstore.orders.common.AbstractIntegrationTest;
 import com.sivalabs.bookstore.orders.domain.OrderService;
 import com.sivalabs.bookstore.orders.domain.entity.OrderStatus;
 import com.sivalabs.bookstore.orders.domain.model.OrderConfirmationDTO;
 import com.sivalabs.bookstore.orders.domain.model.OrderDTO;
 import io.restassured.http.ContentType;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Optional;
-
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-
 class CreateOrderApiTests extends AbstractIntegrationTest {
 
-    @Autowired
-    private OrderService orderService;
+    @Autowired private OrderService orderService;
 
     @Test
     void shouldCreateOrderSuccessfully() {
         mockPaymentValidationRequest("ACCEPTED");
 
-        OrderConfirmationDTO orderConfirmationDTO = given()
-                .contentType(ContentType.JSON)
-                .body(
-                        """
+        OrderConfirmationDTO orderConfirmationDTO =
+                given().contentType(ContentType.JSON)
+                        .body(
+                                """
                                 {
                                     "customer" : {
                                         "name": "Siva",
@@ -51,34 +49,34 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
                                     },
                                     "items": [
                                         {
-                                            "isbn": "P100",
-                                            "title": "Product 1",
+                                            "code": "P100",
+                                            "name": "Product 1",
                                             "price": 25.50,
                                             "quantity": 1
                                         }
                                     ]
                                 }
-                                """
-                )
-                .when()
-                .post("/api/orders")
-                .then()
-                .statusCode(202)
-                .body("orderId", notNullValue())
-                .body("orderStatus", is("NEW"))
-                .extract().body().as(OrderConfirmationDTO.class);
+                                """)
+                        .when()
+                        .post("/api/orders")
+                        .then()
+                        .statusCode(202)
+                        .body("orderId", notNullValue())
+                        .body("orderStatus", is("NEW"))
+                        .extract()
+                        .body()
+                        .as(OrderConfirmationDTO.class);
 
-        Optional<OrderDTO> orderOptional = orderService.findOrderByOrderId(orderConfirmationDTO.getOrderId());
+        Optional<OrderDTO> orderOptional =
+                orderService.findOrderByOrderId(orderConfirmationDTO.getOrderId());
         assertThat(orderOptional).isPresent();
         assertThat(orderOptional.get().getStatus()).isEqualTo(OrderStatus.NEW);
-
     }
 
     @Test
     void shouldCreateOrderWithErrorStatusWhenPaymentRejected() {
         mockPaymentValidationRequest("REJECTED");
-        given()
-                .contentType(ContentType.JSON)
+        given().contentType(ContentType.JSON)
                 .body(
                         """
                         {
@@ -103,28 +101,25 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
                             },
                             "items": [
                                 {
-                                    "isbn": "P100",
-                                    "title": "Product 1",
+                                    "code": "P100",
+                                    "name": "Product 1",
                                     "price": 25.50,
                                     "quantity": 1
                                 }
                             ]
                         }
-                        """
-                )
+                        """)
                 .when()
                 .post("/api/orders")
                 .then()
                 .statusCode(202)
                 .body("orderId", notNullValue())
-                .body("orderStatus", is("ERROR"))
-        ;
+                .body("orderStatus", is("ERROR"));
     }
 
     @Test
     void shouldReturnBadRequestWhenMandatoryDataIsMissing() {
-        given()
-                .contentType(ContentType.JSON)
+        given().contentType(ContentType.JSON)
                 .body(
                         """
                         {
@@ -148,15 +143,14 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
                             },
                             "items": [
                                 {
-                                    "isbn": "P100",
-                                    "title": "Product 1",
+                                    "code": "P100",
+                                    "name": "Product 1",
                                     "price": 25.50,
                                     "quantity": 1
                                 }
                             ]
                         }
-                        """
-                )
+                        """)
                 .when()
                 .post("/api/orders")
                 .then()

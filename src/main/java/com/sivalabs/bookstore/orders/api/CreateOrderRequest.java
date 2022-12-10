@@ -6,13 +6,12 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.math.BigDecimal;
-import java.util.Set;
 
 @Setter
 @Getter
@@ -21,26 +20,26 @@ public class CreateOrderRequest {
     @NotEmpty(message = "Items cannot be empty.")
     private Set<LineItem> items;
 
-    @Valid
-    private Customer customer;
+    @Valid private Customer customer;
 
-    @Valid
-    private Address deliveryAddress;
+    @Valid private Address deliveryAddress;
 
-    @Valid
-    private Payment payment;
+    @Valid private Payment payment;
 
     @Setter
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LineItem {
-        @NotBlank(message = "ISBN is required")
-        private String isbn;
-        @NotBlank(message = "Title is required")
-        private String title;
-        @NotNull(message = "ISBN is required")
+        @NotBlank(message = "Code is required")
+        private String code;
+
+        @NotBlank(message = "Name is required")
+        private String name;
+
+        @NotNull(message = "Price is required")
         private BigDecimal price;
+
         @NotNull
         @Min(1)
         private Integer quantity;
@@ -96,10 +95,8 @@ public class CreateOrderRequest {
         @NotBlank(message = "CVV is required")
         private String cvv;
 
-        @NotNull
-        private Integer expiryMonth;
+        @NotNull private Integer expiryMonth;
 
-        @NotNull
-        private Integer expiryYear;
+        @NotNull private Integer expiryYear;
     }
 }

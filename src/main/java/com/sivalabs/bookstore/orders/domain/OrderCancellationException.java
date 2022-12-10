@@ -6,12 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.ErrorResponseException;
 
-public class OrderNotFoundException extends ErrorResponseException {
+public class OrderCancellationException extends ErrorResponseException {
 
-    public OrderNotFoundException(String orderId) {
+    public OrderCancellationException(String orderId, String reason) {
         super(
-                HttpStatus.NOT_FOUND,
-                asProblemDetail("Order with orderId " + orderId + " not found"),
+                HttpStatus.BAD_REQUEST,
+                asProblemDetail(
+                        "Order with orderId " + orderId + " can't be cancelled. Reason: " + reason),
                 null);
     }
 

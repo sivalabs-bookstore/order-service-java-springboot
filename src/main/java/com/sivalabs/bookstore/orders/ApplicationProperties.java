@@ -7,6 +7,5 @@ public record ApplicationProperties(
         String paymentServiceUrl,
         String newOrdersTopic,
         String deliveredOrdersTopic,
-        String cancelledOrdersTopic
-) {
-}
+        String cancelledOrdersTopic,
+        String errorOrdersTopic) {}

@@ -1,9 +1,6 @@
-create sequence order_id_seq start with 1 increment by 1;
-create sequence order_item_id_seq start with 1 increment by 1;
-
 create table orders
 (
-    id                        bigint DEFAULT nextval('order_id_seq') not null,
+    id                        bigserial not null,
     order_id                  varchar,
     customer_name             varchar,
     customer_email            varchar,
@@ -23,11 +20,11 @@ create table orders
 
 create table order_items
 (
-    id       bigint DEFAULT nextval('order_item_id_seq') not null,
-    isbn     varchar                                     not null,
-    title    varchar                                     not null,
-    price    numeric                                     not null,
-    quantity integer                                     not null,
-    order_id bigint                                      not null references orders (id),
+    id       bigserial not null,
+    code     varchar   not null,
+    name    varchar   not null,
+    price    numeric   not null,
+    quantity integer   not null,
+    order_id bigint    not null references orders (id),
     primary key (id)
 );
