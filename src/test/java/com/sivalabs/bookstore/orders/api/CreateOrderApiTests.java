@@ -114,7 +114,7 @@ class CreateOrderApiTests extends AbstractIntegrationTest {
                 .then()
                 .statusCode(202)
                 .body("orderId", notNullValue())
-                .body("status", is("ERROR"));
+                .body("status", is("PAYMENT_REJECTED"));
     }
 
     @Test

@@ -34,7 +34,7 @@ public class OrderService {
                         payment.getExpiryMonth(), payment.getExpiryYear());
         PaymentResponse paymentResponse = paymentServiceClient.authorize(paymentRequest);
         if (paymentResponse.getStatus() != PaymentResponse.PaymentStatus.ACCEPTED) {
-            newOrder.setStatus(OrderStatus.ERROR);
+            newOrder.setStatus(OrderStatus.PAYMENT_REJECTED);
             newOrder.setComments("Payment rejected");
         }
         Order savedOrder = this.orderRepository.save(newOrder);

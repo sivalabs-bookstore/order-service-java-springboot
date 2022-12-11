@@ -9,6 +9,7 @@ import com.sivalabs.bookstore.orders.events.model.Address;
 import com.sivalabs.bookstore.orders.events.model.Customer;
 import com.sivalabs.bookstore.orders.events.model.LineItem;
 import com.sivalabs.bookstore.orders.events.model.OrderCreatedEvent;
+import com.sivalabs.bookstore.orders.events.model.OrderErrorEvent;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,36 +37,67 @@ public class OrderProcessingJob {
         }
     }
 
+    @Scheduled(fixedDelay = 60000)
+    public void processPaymentRejectedOrders() {
+        List<Order> orders = orderService.findOrdersByStatus(OrderStatus.PAYMENT_REJECTED);
+        for (Order order : orders) {
+            OrderErrorEvent orderErrorEvent = this.buildOrderErrorEvent(order, "Payment rejected");
+            kafkaHelper.send(properties.errorOrdersTopic(), orderErrorEvent);
+            log.info("Published OrderErrorEvent for orderId:{}", order.getOrderId());
+        }
+    }
+
     private OrderCreatedEvent buildOrderCreatedEvent(Order order) {
         OrderCreatedEvent event = new OrderCreatedEvent();
         event.setOrderId(order.getOrderId());
-        event.setCustomer(new Customer());
-        event.getCustomer().setName(order.getCustomerName());
-        event.getCustomer().setEmail(order.getCustomerEmail());
-        event.getCustomer().setPhone(order.getCustomerPhone());
-
-        event.setDeliveryAddress(new Address());
-        event.getDeliveryAddress().setAddressLine1(order.getDeliveryAddressLine1());
-        event.getDeliveryAddress().setAddressLine2(order.getDeliveryAddressLine2());
-        event.getDeliveryAddress().setCity(order.getDeliveryAddressCity());
-        event.getDeliveryAddress().setState(order.getDeliveryAddressState());
-        event.getDeliveryAddress().setZipCode(order.getDeliveryAddressZipCode());
-        event.getDeliveryAddress().setCountry(order.getDeliveryAddressCountry());
-
-        Set<LineItem> lineItems =
-                order.getItems().stream()
-                        .map(
-                                item -> {
-                                    LineItem lineItem = new LineItem();
-                                    lineItem.setCode(item.getCode());
-                                    lineItem.setName(item.getName());
-                                    lineItem.setPrice(item.getPrice());
-                                    lineItem.setQuantity(item.getQuantity());
-                                    return lineItem;
-                                })
-                        .collect(Collectors.toSet());
-        event.setItems(lineItems);
+        event.setCustomer(getCustomer(order));
+        event.setDeliveryAddress(getDeliveryAddress(order));
+        event.setItems(getOrderItems(order));
 
         return event;
+    }
+
+    private OrderErrorEvent buildOrderErrorEvent(Order order, String reason) {
+        OrderErrorEvent event = new OrderErrorEvent();
+        event.setOrderId(order.getOrderId());
+        event.setReason(reason);
+        event.setCustomer(getCustomer(order));
+        event.setDeliveryAddress(getDeliveryAddress(order));
+        event.setItems(getOrderItems(order));
+
+        return event;
+    }
+
+    private Set<LineItem> getOrderItems(Order order) {
+        return order.getItems().stream()
+                .map(
+                        item -> {
+                            LineItem lineItem = new LineItem();
+                            lineItem.setCode(item.getCode());
+                            lineItem.setName(item.getName());
+                            lineItem.setPrice(item.getPrice());
+                            lineItem.setQuantity(item.getQuantity());
+                            return lineItem;
+                        })
+                .collect(Collectors.toSet());
+    }
+
+    private Customer getCustomer(Order order) {
+        Customer customer = new Customer();
+        customer.setName(order.getCustomerName());
+        customer.setEmail(order.getCustomerEmail());
+        customer.setPhone(order.getCustomerPhone());
+        return customer;
+    }
+
+    private Address getDeliveryAddress(Order order) {
+        Address address = new Address();
+        address.setAddressLine1(order.getDeliveryAddressLine1());
+        address.setAddressLine2(order.getDeliveryAddressLine2());
+        address.setCity(order.getDeliveryAddressCity());
+        address.setState(order.getDeliveryAddressState());
+        address.setZipCode(order.getDeliveryAddressZipCode());
+        address.setCountry(order.getDeliveryAddressCountry());
+        return address;
     }
 }
