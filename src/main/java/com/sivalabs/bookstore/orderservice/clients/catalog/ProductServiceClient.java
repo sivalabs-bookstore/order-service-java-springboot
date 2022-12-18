@@ -28,7 +28,7 @@ public class ProductServiceClient {
         try {
             HttpHeaders headers = new HttpHeaders();
             HttpEntity<?> httpEntity = new HttpEntity<>(headers);
-            String url = properties.productServiceUrl() + "/api/products/" + code;
+            String url = properties.catalogServiceUrl() + "/api/products/" + code;
             ResponseEntity<Product> response =
                     restTemplate.exchange(url, HttpMethod.GET, httpEntity, Product.class);
             return Optional.ofNullable(response.getBody());

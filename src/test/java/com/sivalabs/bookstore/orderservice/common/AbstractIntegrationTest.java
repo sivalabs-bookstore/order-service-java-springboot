@@ -64,7 +64,7 @@ public abstract class AbstractIntegrationTest {
         registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
         registry.add("spring.data.redis.host", redis::getHost);
         registry.add("spring.data.redis.port", redis::getFirstMappedPort);
-        registry.add("app.product-service-url", mockServer::getEndpoint);
+        registry.add("app.catalog-service-url", mockServer::getEndpoint);
         registry.add("app.payment-service-url", mockServer::getEndpoint);
         mockServerClient = new MockServerClient(mockServer.getHost(), mockServer.getServerPort());
     }
