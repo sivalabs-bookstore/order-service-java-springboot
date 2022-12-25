@@ -19,7 +19,7 @@
         <spotless.version>2.17.4</spotless.version>
         <testcontainers.version>1.17.6</testcontainers.version>
         <awaitility.version>4.2.0</awaitility.version>
-        <mockserver-netty.version>5.13.2</mockserver-netty.version>
+        <mockserver-netty.version>5.14.0</mockserver-netty.version>
     </properties>
     <dependencies>
         <dependency>

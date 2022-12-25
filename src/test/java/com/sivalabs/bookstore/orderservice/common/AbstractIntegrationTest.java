@@ -37,7 +37,7 @@ public abstract class AbstractIntegrationTest {
             new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.3.0"));
     protected static final MockServerContainer mockServer =
             new MockServerContainer(
-                    DockerImageName.parse("jamesdbloom/mockserver:mockserver-5.13.2"));
+                    DockerImageName.parse("mockserver/mockserver:mockserver-5.14.0"));
 
     protected static MockServerClient mockServerClient;
 
